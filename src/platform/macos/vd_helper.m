@@ -187,7 +187,7 @@ int main(int argc, const char *argv[]) {
 
     // Create display directly on main thread
     CGVirtualDisplayDescriptor *desc = [[CGVirtualDisplayDescriptor alloc] init];
-    desc.name = @"Sunshine Virtual Display";
+    desc.name = @"ShiC Virtual Display";
     desc.vendorID = 0xF0F0;
     desc.productID = 0x5678;
     desc.serialNum = arc4random();

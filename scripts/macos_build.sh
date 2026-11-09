@@ -111,11 +111,11 @@ function run_step_cmake() {
   # The frame drain fix lives in a patched FFmpeg, and nothing here fails when it is missing: the
   # DMG would simply ship the old host latency while still building cleanly. Same selection rule and
   # the same printed verdict as build.sh, so a bundle build cannot drift from what gets deployed.
-  local ffmpeg_bundle="${LUMEN_FFMPEG_BUNDLE:-$HOME/Scripts/Lumen/deps/lumen-ffmpeg-bundle/bundle/ffmpeg}"
-  if [[ "${ffmpeg_bundle}" == "auto" ]]; then
+  local ffmpeg_bundle="${LUMEN_FFMPEG_BUNDLE:-$HOME/.cache/shic/ffmpeg-bundle/bundle/ffmpeg}"
+  if [[ "${ffmpeg_bundle}" == "auto" || ! -f "${ffmpeg_bundle}/lib/libavcodec.a" ]]; then
     echo "==> Building the patched FFmpeg bundle (a few minutes the first time)..."
-    WORK="$HOME/Scripts/Lumen/deps/lumen-ffmpeg-bundle" bash "${script_dir}/../third-party/ffmpeg-patches/build-bundle.sh"
-    ffmpeg_bundle="$HOME/Scripts/Lumen/deps/lumen-ffmpeg-bundle/bundle/ffmpeg"
+    WORK="$HOME/.cache/shic/ffmpeg-bundle" bash "${script_dir}/../third-party/ffmpeg-patches/build-bundle.sh"
+    ffmpeg_bundle="$HOME/.cache/shic/ffmpeg-bundle/bundle/ffmpeg"
   fi
   if [[ -f "${ffmpeg_bundle}/lib/libavcodec.a" ]]; then
     # grep reads a file rather than a pipe: grep -q exits early, which under pipefail would make a
@@ -126,12 +126,12 @@ function run_step_cmake() {
     if grep -q "^frame_drain$" "${drain_symbols}"; then
       echo "==> FFmpeg: ${ffmpeg_bundle} (frame drain available)"
     else
-      echo "==> FFmpeg: ${ffmpeg_bundle} (no frame_drain option, host latency stays at the old level)"
+      echo "ERROR: ${ffmpeg_bundle} has no frame_drain option; refusing to build a high-latency host." >&2; rm -f "${drain_symbols}"; exit 1
     fi
     rm -f "${drain_symbols}"
     cmake_args+=("-DFFMPEG_PREPARED_BINARIES=${ffmpeg_bundle}")
   else
-    echo "==> FFmpeg: published build-deps archive (no frame drain, host latency stays at the old level)"
+    echo "ERROR: patched FFmpeg bundle was not built; refusing to build a high-latency host." >&2; exit 1
   fi
 
   if [[ -n "${sign_app}" ]]; then
@@ -181,11 +181,11 @@ function run_step_dmg() {
   cpack -G DragNDrop --config "${build_dir}/CPackConfig.cmake" --verbose
 
   if [[ -n "${sign_app}" && -n "${notarize}" ]]; then
-    time xcrun notarytool submit "${build_dir}/cpack_artifacts/Sunshine.dmg" \
+    time xcrun notarytool submit "${build_dir}/cpack_artifacts/ShiC.dmg" \
       --keychain-profile "notarytool-password" \
       --wait \
       --timeout 15m
-    xcrun stapler staple -v "${build_dir}/cpack_artifacts/Sunshine.dmg"
+    xcrun stapler staple -v "${build_dir}/cpack_artifacts/ShiC.dmg"
   fi
   return 0
 }

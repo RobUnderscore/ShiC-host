@@ -137,7 +137,7 @@ namespace platf {
       homedir = getpwuid(geteuid())->pw_dir;
     }
 
-    return fs::path {homedir} / ".config/sunshine"sv;
+    return fs::path {homedir} / ".config/shic"sv;
   }
 
   using ifaddr_t = util::safe_ptr<ifaddrs, freeifaddrs>;
@@ -328,7 +328,7 @@ namespace platf {
      * @return NSTerminateLater, because we terminate on our own schedule.
      */
     NSApplicationTerminateReply quit_requested(id self_, NSApplication *app) {
-      BOOST_LOG(info) << "macOS asked Lumen to quit, exiting so it can be relaunched"sv;
+      BOOST_LOG(info) << "macOS asked ShiC to quit, exiting so it can be relaunched"sv;
 
       // Reply before starting the shutdown: the sender of the request is what decides whether to
       // relaunch us, and replying only after the last thread has unwound is too late for it.
@@ -477,7 +477,7 @@ namespace platf {
       return;
     }
 
-    const std::string stamp_path = std::string {home} + "/.config/sunshine/autostart.stamp";
+    const std::string stamp_path = std::string {home} + "/.config/shic/autostart.stamp";
     const auto file = std::filesystem::path {executable_path};
     std::error_code ec;
     const auto stamp = path + ":" + std::to_string(static_cast<long long>(std::filesystem::last_write_time(file, ec).time_since_epoch().count()));
@@ -501,7 +501,7 @@ namespace platf {
     handle.close();
 
     if (!autostart_enabled() && set_autostart_enabled(true)) {
-      BOOST_LOG(info) << "Enabled starting Lumen at login, which can be turned off in the login items of System Settings"sv;
+      BOOST_LOG(info) << "Enabled starting ShiC at login, which can be turned off in the login items of System Settings"sv;
     }
   }
 
@@ -878,7 +878,7 @@ namespace platf {
       return boost::asio::ip::host_name();
     } catch (boost::system::system_error &err) {
       BOOST_LOG(error) << "Failed to get hostname: "sv << err.what();
-      return "Sunshine"s;
+      return "ShiC"s;
     }
   }
 

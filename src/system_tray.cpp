@@ -392,7 +392,7 @@ namespace system_tray {
     // Most grants only apply to a process that starts over, and a menu that says
     // "Granted" is the one place that has to say what happens next.
     menu[index] = {.text = "-"};
-    set_permission_menu_item(menu, index + 1, "Quit and reopen Sunshine after granting", true);
+    set_permission_menu_item(menu, index + 1, "Quit and reopen ShiC after granting", true);
   }
 
   /**
@@ -419,7 +419,7 @@ namespace system_tray {
     .menu =
       (struct tray_menu[]) {
         // Tray menu labels currently use the project's English source strings.
-        {.text = "Open Sunshine", .cb = tray_open_ui_cb},
+        {.text = "Open ShiC", .cb = tray_open_ui_cb},
   #ifdef __APPLE__
         // Without these four permissions Lumen streams a black screen and takes no
         // input, and a first-time user has no way to find out that they are missing.
@@ -753,7 +753,7 @@ namespace system_tray {
     const auto displayed_version = version.empty() ? "unknown" : std::format("v{}", version);
     auto &notification_text = virtualhid_driver_notification_text_storage();
     notification_text = std::format(
-      "Installed Virtual HID Driver {} is not supported by this version of Sunshine. Supported versions: {}. Restart Sunshine after updating. Click for instructions.",
+      "Installed Virtual HID Driver {} is not supported by this version of ShiC. Supported versions: {}. Restart ShiC after updating. Click for instructions.",
       displayed_version,
       supported_versions
     );

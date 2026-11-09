@@ -273,7 +273,7 @@ int main(int argc, char *argv[]) {
   // logging can begin at this point
   // if anything is logged prior to this point, it will appear in stdout, but not in the log viewer in the UI
   // the version should be printed to the log before anything else
-  BOOST_LOG(info) << PROJECT_NAME << " version: " << PROJECT_VERSION << " (Lumen " << LUMEN_VERSION << ") commit: " << PROJECT_VERSION_COMMIT;
+  BOOST_LOG(info) << PROJECT_NAME << " version: " << PROJECT_VERSION << " (ShiC " << LUMEN_VERSION << ") commit: " << PROJECT_VERSION_COMMIT;
 
 // Ask for the permissions that are only discoverable by asking, before the tray and
 // the first stream start. Without this the user is sent to a System Settings list with
@@ -418,7 +418,7 @@ int main(int argc, char *argv[]) {
     BOOST_LOG(info) << "Interrupt handler called"sv;
 
     auto task = []() {
-      BOOST_LOG(fatal) << "10 seconds passed, yet Sunshine's still running: Forcing shutdown"sv;
+      BOOST_LOG(fatal) << "10 seconds passed, yet ShiC's still running: Forcing shutdown"sv;
       logging::log_flush();
       lifetime::debug_trap();
     };
@@ -438,7 +438,7 @@ int main(int argc, char *argv[]) {
     BOOST_LOG(info) << "Terminate handler called"sv;
 
     auto task = []() {
-      BOOST_LOG(fatal) << "10 seconds passed, yet Sunshine's still running: Forcing shutdown"sv;
+      BOOST_LOG(fatal) << "10 seconds passed, yet ShiC's still running: Forcing shutdown"sv;
       logging::log_flush();
       lifetime::debug_trap();
     };
@@ -489,7 +489,7 @@ int main(int argc, char *argv[]) {
     BOOST_LOG(fatal) << "HTTP interface failed to initialize"sv;
 
 #ifdef _WIN32
-    BOOST_LOG(fatal) << "To relaunch Sunshine successfully, use the shortcut in the Start Menu. Do not run Sunshine.exe manually."sv;
+    BOOST_LOG(fatal) << "To relaunch ShiC successfully, use the shortcut in the Start Menu. Do not run ShiC.exe manually."sv;
     std::this_thread::sleep_for(10s);
 #endif
 
@@ -518,8 +518,8 @@ int main(int argc, char *argv[]) {
 #ifdef _WIN32
   // If we're using the default port and GameStream is enabled, warn the user
   if (config::sunshine.port == 47989 && is_gamestream_enabled()) {
-    BOOST_LOG(fatal) << "GameStream is still enabled in GeForce Experience! This *will* cause streaming problems with Sunshine!"sv;
-    BOOST_LOG(fatal) << "Disable GameStream on the SHIELD tab in GeForce Experience or change the Port setting on the Advanced tab in the Sunshine Web UI."sv;
+    BOOST_LOG(fatal) << "GameStream is still enabled in GeForce Experience! This *will* cause streaming problems with ShiC!"sv;
+    BOOST_LOG(fatal) << "Disable GameStream on the SHIELD tab in GeForce Experience or change the Port setting on the Advanced tab in the ShiC Web UI."sv;
   }
 #endif
 

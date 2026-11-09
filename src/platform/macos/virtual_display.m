@@ -45,7 +45,7 @@ uint32_t virtual_display_create(int width, int height, int fps) {
 
   // Destroy existing display first
   if (vd_helper_pid > 0) {
-    NSLog(@"[Sunshine] Killing existing vd_helper (pid=%d, display=%u) before creating new one",
+    NSLog(@"[ShiC] Killing existing vd_helper (pid=%d, display=%u) before creating new one",
           vd_helper_pid, vd_display_id);
     kill(vd_helper_pid, SIGTERM);
     int status;
@@ -56,23 +56,23 @@ uint32_t virtual_display_create(int width, int height, int fps) {
 
   NSString *helper = helperPath();
   if (!helper) {
-    NSLog(@"[Sunshine] Could not determine vd_helper path");
+    NSLog(@"[ShiC] Could not determine vd_helper path");
     pthread_mutex_unlock(&vd_mutex);
     return 0;
   }
 
   if (![[NSFileManager defaultManager] isExecutableFileAtPath:helper]) {
-    NSLog(@"[Sunshine] vd_helper not found at: %@", helper);
+    NSLog(@"[ShiC] vd_helper not found at: %@", helper);
     pthread_mutex_unlock(&vd_mutex);
     return 0;
   }
 
-  NSLog(@"[Sunshine] Spawning vd_helper: %@ %d %d %d", helper, width, height, fps);
+  NSLog(@"[ShiC] Spawning vd_helper: %@ %d %d %d", helper, width, height, fps);
 
   // Set up pipe for reading displayID from child's stdout
   int pipefd[2];
   if (pipe(pipefd) != 0) {
-    NSLog(@"[Sunshine] pipe() failed: %s", strerror(errno));
+    NSLog(@"[ShiC] pipe() failed: %s", strerror(errno));
     pthread_mutex_unlock(&vd_mutex);
     return 0;
   }
@@ -106,13 +106,13 @@ uint32_t virtual_display_create(int width, int height, int fps) {
   close(pipefd[1]);
 
   if (err != 0) {
-    NSLog(@"[Sunshine] posix_spawn failed: %s", strerror(err));
+    NSLog(@"[ShiC] posix_spawn failed: %s", strerror(err));
     close(pipefd[0]);
     pthread_mutex_unlock(&vd_mutex);
     return 0;
   }
 
-  NSLog(@"[Sunshine] vd_helper spawned (pid=%d)", pid);
+  NSLog(@"[ShiC] vd_helper spawned (pid=%d)", pid);
 
   // Read displayID from child's stdout (with timeout)
   char buf[64] = {0};
@@ -131,7 +131,7 @@ uint32_t virtual_display_create(int width, int height, int fps) {
   close(pipefd[0]);
 
   if (n <= 0) {
-    NSLog(@"[Sunshine] vd_helper produced no output, killing");
+    NSLog(@"[ShiC] vd_helper produced no output, killing");
     kill(pid, SIGTERM);
     waitpid(pid, NULL, 0);
     pthread_mutex_unlock(&vd_mutex);
@@ -140,7 +140,7 @@ uint32_t virtual_display_create(int width, int height, int fps) {
 
   uint32_t displayID = (uint32_t)strtoul(buf, NULL, 10);
   if (displayID == 0) {
-    NSLog(@"[Sunshine] vd_helper returned displayID=0, killing");
+    NSLog(@"[ShiC] vd_helper returned displayID=0, killing");
     kill(pid, SIGTERM);
     waitpid(pid, NULL, 0);
     pthread_mutex_unlock(&vd_mutex);
@@ -150,7 +150,7 @@ uint32_t virtual_display_create(int width, int height, int fps) {
   vd_helper_pid = pid;
   vd_display_id = displayID;
 
-  NSLog(@"[Sunshine] Virtual display %u created via vd_helper (pid=%d)", displayID, pid);
+  NSLog(@"[ShiC] Virtual display %u created via vd_helper (pid=%d)", displayID, pid);
 
   // Write display ID to file so launch scripts can find the virtual display
   [@(displayID).stringValue writeToFile:@"/tmp/sunshine_vd_id" atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -163,7 +163,7 @@ uint32_t virtual_display_create(int width, int height, int fps) {
     for (uint32_t i = 0; i < displayCount; i++) {
       if (activeDisplays[i] == displayID) { found = YES; break; }
     }
-    NSLog(@"[Sunshine] Parent sees display %u: %@ in CGGetActiveDisplayList (%u total)",
+    NSLog(@"[ShiC] Parent sees display %u: %@ in CGGetActiveDisplayList (%u total)",
           displayID, found ? @"FOUND" : @"NOT found", displayCount);
   }
 
@@ -177,7 +177,7 @@ void virtual_display_destroy(void) {
   if (vd_helper_pid > 0) {
     uint32_t old_id = vd_display_id;
     pid_t old_pid = vd_helper_pid;
-    NSLog(@"[Sunshine] Destroying virtual display %u (killing vd_helper pid=%d)", old_id, old_pid);
+    NSLog(@"[ShiC] Destroying virtual display %u (killing vd_helper pid=%d)", old_id, old_pid);
     kill(old_pid, SIGTERM);
     // Non-blocking wait — child might take a moment
     int status;
@@ -187,7 +187,7 @@ void virtual_display_destroy(void) {
     }
     vd_helper_pid = 0;
     vd_display_id = 0;
-    NSLog(@"[Sunshine] Destroyed virtual display %u", old_id);
+    NSLog(@"[ShiC] Destroyed virtual display %u", old_id);
     [[NSFileManager defaultManager] removeItemAtPath:@"/tmp/sunshine_vd_id" error:nil];
   }
 

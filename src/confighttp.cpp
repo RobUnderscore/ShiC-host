@@ -566,7 +566,7 @@ namespace confighttp {
 
     const SimpleWeb::CaseInsensitiveMultimap headers {
       {"Content-Type", "application/json"},
-      {"WWW-Authenticate", R"(Basic realm="Sunshine Gamestream Host", charset="UTF-8")"},
+      {"WWW-Authenticate", R"(Basic realm="ShiC Gamestream Host", charset="UTF-8")"},
       {"X-Frame-Options", "DENY"},
       {"Content-Security-Policy", "frame-ancestors 'none';"}
     };
@@ -845,7 +845,7 @@ namespace confighttp {
       if (query_it == query_params.end()) {
         auto address = net::addr_to_normalized_string(request->remote_endpoint().address());
         BOOST_LOG(error) << "Web UI: ["sv << address << "] -- CSRF protection blocked request from origin: "sv << blocked_origin;
-        BOOST_LOG(error) << "Web UI: To allow this origin, add it to the 'csrf_allowed_origins' option in your Sunshine configuration"sv;
+        BOOST_LOG(error) << "Web UI: To allow this origin, add it to the 'csrf_allowed_origins' option in your ShiC configuration"sv;
         bad_request(response, request, "Missing CSRF token");
         return false;
       }

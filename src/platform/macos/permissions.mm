@@ -65,7 +65,7 @@ namespace platf {
       struct permission_t {
         std::string key;  ///< Stable name written to `--report` files.
         std::string name;  ///< Short menu label, using the name macOS shows for it.
-        std::string purpose;  ///< What Lumen needs this permission for.
+        std::string purpose;  ///< What ShiC needs this permission for.
         std::string pane;  ///< System Settings deep link for the matching list.
         std::string action;  ///< What the user must do, which is not always flipping a switch.
         std::function<bool()> granted;  ///< Live check, re-read on every poll.
@@ -105,7 +105,7 @@ namespace platf {
             "Screen Recording",
             "capture the desktop for the video stream",
             std::string {k_pane_screen_capture},
-            "switch Sunshine/Lumen on in the list",
+            "switch ShiC on in the list",
             [] {
               return platf::is_screen_capture_allowed();
             },
@@ -118,7 +118,7 @@ namespace platf {
             "Accessibility",
             "post keyboard, mouse and scroll events",
             std::string {k_pane_accessibility},
-            "switch Sunshine/Lumen on in the list",
+            "switch ShiC on in the list",
             [] {
               return AXIsProcessTrusted() != 0;
             },
@@ -188,7 +188,7 @@ namespace platf {
           dir = std::string {home} + "/.config";
         }
 
-        return dir.empty() ? std::string {} : dir + "/sunshine/permission-guide.stamp";
+        return dir.empty() ? std::string {} : dir + "/shic/permission-guide.stamp";
       }
     }  // namespace
 
@@ -304,7 +304,7 @@ namespace platf {
         } else if (arg == "--report" && x + 1 < argc) {
           report_path = argv[++x];
         } else {
-          std::cout << "usage: lumen --permissions [--grant] [--wait <seconds per item>] [--report <path>]"sv << std::endl;
+          std::cout << "usage: shic --permissions [--grant] [--wait <seconds per item>] [--report <path>]"sv << std::endl;
           return 2;
         }
       }
@@ -376,7 +376,7 @@ namespace platf {
 
       auto print = [&](const std::vector<bool> &states) {
         say("");
-        say("macOS permissions for Lumen");
+        say("macOS permissions for ShiC");
         for (std::size_t x = 0; x < permissions.size(); ++x) {
           say(std::string {states[x] ? "  [ok]   " : "  [need] "} + permissions[x].key + " - " + permissions[x].purpose);
         }
@@ -389,7 +389,7 @@ namespace platf {
       say("  macOS attributes a permission to the process that asks for it, so this is the");
       say("  install that ran the command. A run from a terminal is attributed to the");
       say("  terminal app itself; for the .app bundle run it as the app instead:");
-      say("    open -na Sunshine --args --permissions --grant");
+      say("    open -na ShiC --args --permissions --grant");
 
       if (!grant) {
         for (std::size_t x = 0; x < permissions.size(); ++x) {
@@ -443,14 +443,14 @@ namespace platf {
       say("");
       if (all_granted(states)) {
         say("all permissions granted. A running process keeps the permissions it started");
-        say("with, so start Lumen now - the menu bar icon appears only once it is running,");
+        say("with, so start ShiC now - the menu bar icon appears only once it is running,");
         say("and an instance that was already running has to be quit and opened again.");
         return 0;
       }
 
       say("still missing. Open System Settings > Privacy & Security for the names above;");
       say("if an entry is listed but switched off, switch it on - macOS may ask you to quit");
-      say("Lumen first, in which case quit, switch, start it again and run this once more.");
+      say("ShiC first, in which case quit, switch, start it again and run this once more.");
       return 1;
     }
   }  // namespace macos

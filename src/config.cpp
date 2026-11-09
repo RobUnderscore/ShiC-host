@@ -55,7 +55,7 @@
 namespace fs = std::filesystem;
 using namespace std::literals;
 
-constexpr auto CA_DIR = "credentials";  ///< Subdirectory under app data that stores Sunshine credentials.
+constexpr auto CA_DIR = "credentials";  ///< Subdirectory under app data that stores ShiC credentials.
 const std::string PRIVATE_KEY_FILE = std::string(CA_DIR) + "/cakey.pem";  ///< Relative path to the persisted private key PEM file.
 const std::string CERTIFICATE_FILE = std::string(CA_DIR) + "/cacert.pem";  ///< Relative path to the persisted certificate PEM file.
 const std::string APPS_JSON_PATH = platf::appdata().string() + "/apps.json";  ///< Default path to the applications JSON file.
@@ -915,12 +915,12 @@ namespace config {
     {},  // Username
     {},  // Password
     {},  // Password Salt
-    platf::appdata().string() + "/sunshine.conf",  // config file
+    platf::appdata().string() + "/shic.conf",  // config file
     {},  // cmd args
     47989,  // Base port number
     "ipv4",  // Address family
     {},  // Bind address
-    platf::appdata().string() + "/sunshine.log",  // log file
+    platf::appdata().string() + "/shic.log",  // log file
     false,  // notify_pre_releases
     true,  // system_tray
     {},  // prep commands
@@ -2101,7 +2101,7 @@ namespace config {
     // so that service instance will do the work instead.
 
     if (!config_loaded && !shortcut_launch) {
-      BOOST_LOG(fatal) << "To relaunch Sunshine successfully, use the shortcut in the Start Menu. Do not run Sunshine.exe manually."sv;
+      BOOST_LOG(fatal) << "To relaunch ShiC successfully, use the shortcut in the Start Menu. Do not run ShiC.exe manually."sv;
       std::this_thread::sleep_for(10s);
 #else
     if (!config_loaded) {

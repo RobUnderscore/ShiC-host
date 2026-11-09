@@ -212,8 +212,8 @@ static const uint8_t kHIDReportDescriptor[] = {
   NSDictionary *props = @{
     @kIOHIDVendorIDKey: @(0x1209),  // Generic (pid.codes open-source VID)
     @kIOHIDProductIDKey: @(0x5853),  // Not in SDL's known controller database
-    @kIOHIDManufacturerKey: @"Sunshine Virtual Gamepad",
-    @kIOHIDProductKey: [NSString stringWithFormat:@"Sunshine Gamepad %d", _gamepadIndex],
+    @kIOHIDManufacturerKey: @"ShiC Virtual Gamepad",
+    @kIOHIDProductKey: [NSString stringWithFormat:@"ShiC Gamepad %d", _gamepadIndex],
     @kIOHIDSerialNumberKey: [NSString stringWithFormat:@"SUNSHINE-%d", _gamepadIndex],
     @kIOHIDTransportKey: @"USB",
     @kIOHIDReportDescriptorKey: [NSData dataWithBytes:kHIDReportDescriptor

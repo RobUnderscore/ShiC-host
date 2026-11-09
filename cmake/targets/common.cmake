@@ -28,7 +28,7 @@ target_compile_definitions(lumen PUBLIC ${SUNSHINE_DEFINITIONS})
 target_include_directories(lumen PRIVATE "${CMAKE_BINARY_DIR}")
 # Bundle output must match the executable and app names configured by macOS packaging.
 if(NOT APPLE OR SUNSHINE_BUILD_HOMEBREW)
-    set_target_properties(lumen PROPERTIES OUTPUT_NAME "lumen")
+    set_target_properties(lumen PROPERTIES OUTPUT_NAME "shic")
 endif()
 
 # CLion complains about unknown flags after running cmake, and cannot add symbols to the index for cuda files

@@ -1,10 +1,10 @@
 #!/bin/bash
-# Lumen macOS 授权引导（四项 TCC 授权 + 引导开启）
+# ShiC macOS 授权引导（四项 TCC 授权 + 引导开启）
 #
 # 为什么要这个工具：macOS 把权限给「提出要求的那个程序」，不是给你想配置的那个安装。
-# 所以外面写的脚本读到的都是它自己（或 Terminal）的权限，只有 Lumen 自己跑出来的
+# 所以外面写的脚本读到的都是它自己（或 Terminal）的权限，只有 ShiC 自己跑出来的
 # 结果才算数。分工是：
-#   app（lumen --permissions）：查询 + 向系统要求 + 决定顺序，一次一项
+#   app（shic --permissions）：查询 + 向系统要求 + 决定顺序，一次一项
 #   这个脚本：你看到的一切（中文说明、现在该开哪个面板、进度、结束后的动作）
 # 两者靠 report 档案沟通：引导进程会在里面写 active=<key> 表示「现在这项」。
 #
@@ -12,7 +12,7 @@
 
 set -u
 
-APP="/Applications/Sunshine.app"
+APP="/Applications/ShiC.app"
 BREW="/opt/homebrew/opt/lumen/bin/lumen"
 REPORT="$(mktemp /tmp/lumen-permissions.XXXXXX)"
 trap 'rm -f "$REPORT" "$REPORT.tmp"' EXIT
@@ -25,8 +25,8 @@ NAMES=(
   "辅助功能      送出键盘、鼠标、滚动事件"
 )
 ACTIONS=(
-  "在列表里把 Sunshine 的开关打开"
-  "在列表里把 Sunshine 的开关打开（若 macOS 要求先退出 Sunshine，同意，之后再开一次）"
+  "在列表里把 ShiC 的开关打开"
+  "在列表里把 ShiC 的开关打开（若 macOS 要求先退出 ShiC，同意，之后再开一次）"
 )
 
 # 每一项最多等 5 分钟（完全磁盘访问要拖档案）
@@ -61,7 +61,7 @@ fi
 
 # ── 收掉残留的引导实例 ─────────────────────────────────────────────────────
 # 上一次跑到一半没结束的引导实例会把 TCC 要求握在那里没人答复，超时后 macOS 把它
-# 结算成「已拒绝」；之后不但不会再弹窗，连面板清单里都不会列出 Sunshine。
+# 结算成「已拒绝」；之后不但不会再弹窗，连面板清单里都不会列出 ShiC。
 stale="$(pgrep -f -- '-[-]permissions --report' | tr '\n' ' ')"
 if [ -n "$stale" ]; then
   dim "发现上次没结束的引导实例（pid: ${stale}），先收掉——不然它们会把授权要求握在手里。"
@@ -82,7 +82,7 @@ elif [ -x "$BREW" ]; then
   dim "注意：从终端机跑，权限会归给终端机（不是 LaunchAgent 里的服务）。"
   dim "服务自己缺什么会在 ~/.config/sunshine/sunshine.log 里写出来。"
 else
-  bold "找不到 Lumen 安装。"
+  bold "找不到 ShiC 安装。"
   dim "先装 DMG（拖进「应用程序」），或先 brew 安装。"
   exit 1
 fi
@@ -130,7 +130,7 @@ show() {
 bold "第 1 步：看现在的状态"
 if ! probe; then
   bold "❌ 检查没跑起来。"
-  dim "如果 Lumen 是刚装好的，先开过一次 app（或在终端机跑一次 lumen --permissions）再试。"
+  dim "如果 ShiC 是刚装好的，先开过一次 app（或在终端机跑一次 shic --permissions）再试。"
   exit 1
 fi
 show
@@ -189,7 +189,7 @@ while pgrep -f "[-]-permissions --report" >/dev/null 2>&1; do   # 字元类别�
   if [ "$current" = "$previous" ]; then
     frozen=$((frozen + 1))
     if [ "$frozen" -eq 45 ]; then
-      dim "  （45 秒没进展。如果面板里没有 Sunshine 这一项：它被记成「已拒绝」了，"
+      dim "  （45 秒没进展。如果面板里没有 ShiC 这一项：它被记成「已拒绝」了，"
       dim "    照本档案最后的修法清一次再重跑）"
     elif [ "$frozen" -ge 180 ]; then
       dim "  （3 分钟没进展，这边先收尾；剩下的项目照下面列的手动开就好）"
@@ -211,15 +211,15 @@ echo
 
 if [ "${MISSING:-0}" -eq 0 ]; then
   green "✅ 四项授权都给了。"
-  bold "  现在请正式启动 Sunshine：到「应用程序」双击 Sunshine（或 Spotlight 搜 Sunshine）。"
+  bold "  现在请正式启动 ShiC：到「应用程序」双击 ShiC（或 Spotlight 搜 ShiC）。"
   dim "菜单栏图标只有正式跑起来才会出现；如果它已经在跑，先「结束」再开一次，"
   dim "因为跑着的进程只保留启动时拿到的权限。"
   exit 0
 fi
 
-dim "如果菜单栏出现两个 Sunshine 图标：绑 port 的那个才是真的在服务，另一个是某个"
+dim "如果菜单栏出现两个 ShiC 图标：绑 port 的那个才是真的在服务，另一个是某个"
 dim "实例退出后残留的图画（引导必须用 open -n 才能把参数传给 app，所以过程中会短暂"
-dim "出现第二个实例）。结束 Sunshine 再开一次就干净。"
+dim "出现第二个实例）。结束 ShiC 再开一次就干净。"
 echo
 red "❌ 还有缺的（上面列的名字）。"
 echo "     手动开：系统设置 → 隐私与安全性 →"
@@ -229,17 +229,17 @@ for i in "${!KEYS[@]}"; do
   dim "         ${ACTIONS[$i]}"
 done
 echo
-dim "如果列表里已经有 Sunshine 但开关是关的：打开它；macOS 可能要求先结束 Sunshine，"
-dim "就照它做，然后再开一次开关并重启 Sunshine，接着重跑本工具。"
-dim "如果面板里连 Sunshine 都看不到：它被记成「已拒绝」了（要求没被答复就会这样结算，"
+dim "如果列表里已经有 ShiC 但开关是关的：打开它；macOS 可能要求先结束 ShiC，"
+dim "就照它做，然后再开一次开关并重启 ShiC，接着重跑本工具。"
+dim "如果面板里连 ShiC 都看不到：它被记成「已拒绝」了（要求没被答复就会这样结算，"
 dim "比如引导实例跑到一半没结束）。已拒绝的状态 macOS 不再弹窗、清单也不列出来，要这样清："
 echo
-echo "       1. 菜单栏 Sunshine 图标 → Quit"
-echo "       2. tccutil reset All dev.lizardbyte.app.Sunshine"
+echo "       1. 菜单栏 ShiC 图标 → Quit"
+echo "       2. tccutil reset All com.robcubed.ShiC"
 dim "          （只想清一项就换服务名：ScreenCapture / Accessibility / ListenEvent /"
-dim "            SystemPolicyAllFiles，例如 tccutil reset Accessibility dev.lizardbyte.app.Sunshine）"
-echo "       3. 到「应用程序」双击 Sunshine —— 它会重新提出要求，这时弹窗才会出现 → 按【允许】"
-dim "          （屏幕录制也可以在面板里按左下角「+」手动选 Sunshine.app）"
+dim "            SystemPolicyAllFiles，例如 tccutil reset Accessibility com.robcubed.ShiC）"
+echo "       3. 到「应用程序」双击 ShiC —— 它会重新提出要求，这时弹窗才会出现 → 按【允许】"
+dim "          （屏幕录制也可以在面板里按左下角「+」手动选 ShiC.app）"
 echo "       4. 再跑本工具"
 echo
 dim "如果列表里出现的是「bash」或「Terminal」：那是以前从别的身份跑造成的，"

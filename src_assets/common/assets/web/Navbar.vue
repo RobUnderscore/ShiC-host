@@ -2,8 +2,8 @@
   <div>
     <nav class="navbar navbar-expand-lg navbar-sunshine">
       <div class="container-fluid">
-        <a class="navbar-brand" href="./" title="Sunshine">
-          <img src="/images/logo-sunshine-45.png" height="45" alt="Sunshine">
+        <a class="navbar-brand" href="./" title="ShiC">
+          <img src="/images/logo-sunshine-45.png" height="45" alt="ShiC">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,12 +27,6 @@
               <a class="nav-link" href="./apps">
                 <Layers :size="18" class="icon"></Layers>
                 {{ $t('navbar.applications') }}
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./featured">
-                <Star :size="18" class="icon"></Star>
-                {{ $t('navbar.featured') }}
               </a>
             </li>
             <li class="nav-item">
